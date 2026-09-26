@@ -25,7 +25,7 @@ class Loan
   end
 
   def late?
-    returned_on >= due_on
+    returned_on > due_on
   end
 
   def days_late
