@@ -1,42 +1,79 @@
-# spec/loan_spec.rb
 require 'loan'
+require 'date'
 
 RSpec.describe Loan do
-  let(:due) { Date.new(2026, 10, 1) }
-
   describe '.new' do
-    it 'raises an ArgumentError when the due date is missing' do
-      expect { Loan.new(due_on: nil, returned_on: due) }.to raise_error(ArgumentError, 'Due date is required')
-    end
+    context 'when given non-nil due date and return date' do
+      it 'creates a loan' do
+        due = Date.new(2026, 10, 7)
+        returned = Date.new(2026, 10, 5)
 
-    it 'raises an ArgumentError when the return date is missing'
+        loan = Loan.new(due_on: due, returned_on: returned)
+
+        expect(loan.due_on).to eq(Date.new(2026, 10, 7))
+        expect(loan.returned_on).to eq(Date.new(2026, 10, 5))
+      end
+
+    end
+    context 'when given nil due date' do
+      it 'raise ArgumentError' do
+        due = nil
+        returned = Date.new(2026, 10, 5)
+
+        expect { Loan.new(due_on: due, returned_on: returned) }.to raise_error(ArgumentError, 'Due date is required')
+      end
+
+    end
+    context 'when given nil return date' do
+      it 'raises ArgumentError' do
+        due = Date.new(2026, 10, 7)
+        returned = nil
+
+        expect { Loan.new(due_on: due, returned_on: returned) }.to raise_error(ArgumentError, 'Return date is required')
+      end
+
+    end
   end
 
   describe '#late?' do
-    context 'when returned before the due date' do
-      it 'is not late'
-    end
+    context 'when returned before due date' do
+      it 'is not late' do
+        returned = Date.new(2026, 10, 5)
+        due = Date.new(2026, 10, 7)
 
-    context 'when returned on the due date' do
-      it 'is not late'
-    end
+        loan = Loan.new(due_on: due, returned_on: returned)
 
-    context 'when returned after the due date' do
-      it 'is late'
+        expect(loan.late?).to eq(false)
+      end
+    end
+    context 'when returned on due date' do
+      it 'is not late' do
+        returned = Date.new(2026, 10, 5)
+        due = Date.new(2026, 10, 5)
+
+        loan = Loan.new(due_on: due, returned_on: returned)
+
+        expect(loan.late?).to eq(false)
+      end
+    end
+    context 'when returned after due date' do
+      it 'is late' do
+        returned = Date.new(2026, 10, 7)
+        due = Date.new(2026, 10, 5)
+
+        loan = Loan.new(due_on: due, returned_on: returned)
+
+        expect(loan.late?).to eq(true)
+      end
+
     end
   end
 
   describe '#days_late' do
-    context 'when returned before the due date' do
-      it 'is 0'
-    end
 
-    context 'when returned 3 days after the due date' do
-      it 'is 3'
-    end
   end
 
   describe '#fee' do
-    # Which returns could this get wrong?
+
   end
 end
